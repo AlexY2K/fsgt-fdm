@@ -8,12 +8,12 @@ import {
   useColorScheme,
   ActivityIndicator,
   RefreshControl,
-  Alert,
 } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { useMatchSheets } from '@/hooks/useMatchSheets';
+import { useConfirmDelete } from '@/hooks/useConfirmDelete';
 import Colors from '@/constants/Colors';
 import type { MatchSheet } from '@/types/match';
 
@@ -41,6 +41,7 @@ function getMatchTitle(sheet: MatchSheet) {
 
 export default function FeuillesListScreen() {
   const { sheets, loading, loadSheets, deleteSheet } = useMatchSheets();
+  const confirmDelete = useConfirmDelete(deleteSheet);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const [refreshing, setRefreshing] = React.useState(false);
@@ -51,13 +52,6 @@ export default function FeuillesListScreen() {
 
   const handleOpen = (id: string) => {
     router.push(`/(tabs)/(feuilles)/feuille/${id}`);
-  };
-
-  const handleDelete = (id: string, title: string) => {
-    Alert.alert('Supprimer', `Supprimer la feuille « ${title} » ?`, [
-      { text: 'Annuler', style: 'cancel' },
-      { text: 'Supprimer', style: 'destructive', onPress: () => deleteSheet(id) },
-    ]);
   };
 
   const onRefresh = async () => {
@@ -114,7 +108,7 @@ export default function FeuillesListScreen() {
             <TouchableOpacity
               style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
               onPress={() => handleOpen(item.id)}
-              onLongPress={() => handleDelete(item.id, getMatchTitle(item))}
+              onLongPress={() => confirmDelete(item.id, getMatchTitle(item))}
               activeOpacity={0.7}
             >
               <Text style={[styles.cardTitle, { color: colors.text }]}>

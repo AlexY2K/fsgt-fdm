@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -9,13 +9,12 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from 'react-native';
-import { useLocalSearchParams, router } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-import { useMatch } from '@/context/MatchContext';
-import { useMatchSheets } from '@/hooks/useMatchSheets';
+import { useFeuilleEdit, KEYBOARD_VERTICAL_OFFSET_IOS } from '@/hooks/useFeuilleEdit';
+import { SCROLL_PADDING_BOTTOM } from '@/constants/Layout';
 import { FeuilleSectionInfo } from '@/components/feuille/FeuilleSectionInfo';
 import { FeuilleSectionEquipes } from '@/components/feuille/FeuilleSectionEquipes';
 import { FeuilleSectionScores } from '@/components/feuille/FeuilleSectionScores';
@@ -30,6 +29,12 @@ export default function FeuilleEditScreen() {
 
   const {
     match,
+    loading,
+    isNew,
+    saving,
+    deleting,
+    handleSave,
+    handleDelete,
     updateInfo,
     updateEquipeA,
     updateEquipeB,
@@ -42,70 +47,7 @@ export default function FeuilleEditScreen() {
     updateScores,
     updateReclamations,
     updateSignatures,
-    setMatchFromData,
-    getMatch,
-    resetMatch,
-  } = useMatch();
-
-  const { getSheet, saveSheet, deleteSheet, loading } = useMatchSheets();
-  const [saving, setSaving] = React.useState(false);
-  const [deleting, setDeleting] = React.useState(false);
-
-  const isNew = id === 'nouveau';
-
-  useEffect(() => {
-    if (isNew) {
-      resetMatch();
-    } else {
-      const sheet = getSheet(id ?? '');
-      if (sheet?.data) {
-        setMatchFromData(sheet.data, sheet.id);
-      }
-    }
-  }, [id, isNew, getSheet, setMatchFromData, resetMatch]);
-
-  const handleSave = useCallback(async () => {
-    setSaving(true);
-    try {
-      const data = getMatch();
-      const sheet = await saveSheet(isNew ? null : id ?? null, data);
-      if (isNew) {
-        router.replace(`/(tabs)/(feuilles)/feuille/${sheet.id}`);
-      }
-    } catch (e) {
-      console.error('Save failed:', e);
-      Alert.alert('Erreur', 'Impossible de sauvegarder la feuille.');
-    } finally {
-      setSaving(false);
-    }
-  }, [id, isNew, getMatch, saveSheet]);
-
-  const handleDelete = useCallback(() => {
-    const sheet = getSheet(id ?? '');
-    const title =
-      sheet?.data.equipeA.nom || sheet?.data.equipeB.nom
-        ? `${sheet?.data.equipeA.nom || 'Équipe A'} vs ${sheet?.data.equipeB.nom || 'Équipe B'}`
-        : 'cette feuille';
-    Alert.alert('Supprimer', `Supprimer la feuille « ${title} » ?`, [
-      { text: 'Annuler', style: 'cancel' },
-      {
-        text: 'Supprimer',
-        style: 'destructive',
-        onPress: async () => {
-          setDeleting(true);
-          try {
-            await deleteSheet(id ?? '');
-            router.back();
-          } catch (e) {
-            console.error('Delete failed:', e);
-            Alert.alert('Erreur', 'Impossible de supprimer la feuille.');
-          } finally {
-            setDeleting(false);
-          }
-        },
-      },
-    ]);
-  }, [id, getSheet, deleteSheet]);
+  } = useFeuilleEdit(id);
 
   if (loading && !isNew) {
     return (
@@ -119,7 +61,7 @@ export default function FeuilleEditScreen() {
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? KEYBOARD_VERTICAL_OFFSET_IOS : 0}
     >
       <ScrollView
         style={styles.scroll}
@@ -189,7 +131,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scroll: { flex: 1 },
-  scrollContent: { padding: 16, paddingBottom: Platform.OS === 'ios' ? 50 : 24 },
+  scrollContent: { padding: 16, paddingBottom: SCROLL_PADDING_BOTTOM },
   spacer: { height: 20 },
   footer: {
     padding: 16,
