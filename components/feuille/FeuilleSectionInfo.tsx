@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, useColorScheme, Switch } from 'react
 import { ChampionnatSelect } from '@/components/ChampionnatSelect';
 import { DateTimePickerField } from '@/components/DateTimePickerField';
 import Colors from '@/constants/Colors';
+import { INPUT_LIMITS } from '@/constants/Validation';
 import type { MatchInfo } from '@/types/match';
 
 interface Props {
@@ -27,6 +28,7 @@ export function FeuilleSectionInfo({ info, onInfo }: Props) {
         onChangeText={(v) => onInfo({ salle: v })}
         placeholder="Nom de la salle"
         placeholderTextColor="#94a3b8"
+        maxLength={INPUT_LIMITS.TEXT_SHORT}
       />
       <View style={styles.row}>
         <Text style={[styles.label, { color: colors.text }]}>Auto-arbitrage</Text>
@@ -45,6 +47,7 @@ export function FeuilleSectionInfo({ info, onInfo }: Props) {
             onChangeText={(v) => onInfo({ arbitreNom: v })}
             placeholder="Nom"
             placeholderTextColor="#94a3b8"
+            maxLength={INPUT_LIMITS.TEXT_SHORT}
           />
           <TextInput
             style={[styles.input, styles.inputWithMargin, { color: colors.text, borderColor: colors.border }]}
@@ -52,6 +55,7 @@ export function FeuilleSectionInfo({ info, onInfo }: Props) {
             onChangeText={(v) => onInfo({ arbitreLicence: v })}
             placeholder="N° licence"
             placeholderTextColor="#94a3b8"
+            maxLength={INPUT_LIMITS.LICENCE}
           />
           <TextInput
             style={[styles.input, styles.inputWithMargin, { color: colors.text, borderColor: colors.border }]}
@@ -59,6 +63,7 @@ export function FeuilleSectionInfo({ info, onInfo }: Props) {
             onChangeText={(v) => onInfo({ arbitreClub: v })}
             placeholder="Club"
             placeholderTextColor="#94a3b8"
+            maxLength={INPUT_LIMITS.TEXT_SHORT}
           />
         </>
       )}

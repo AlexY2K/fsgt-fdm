@@ -6,10 +6,10 @@ import {
   StyleSheet,
   useColorScheme,
   TouchableOpacity,
-  ScrollView,
 } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Colors from '@/constants/Colors';
+import { INPUT_LIMITS } from '@/constants/Validation';
 import type { Team, Player } from '@/types/match';
 
 interface Props {
@@ -40,7 +40,7 @@ function TeamBlock({
   onJoueur: (i: number, d: Partial<Player>) => void;
   onAdd: () => void;
   onRemove: (i: number) => void;
-  colors: ReturnType<typeof Colors[keyof typeof Colors]>;
+  colors: (typeof Colors)['light'];
 }) {
   return (
     <View style={[styles.teamCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -51,6 +51,7 @@ function TeamBlock({
         onChangeText={(v) => onTeam({ nom: v })}
         placeholder="Nom de l'équipe"
         placeholderTextColor="#94a3b8"
+        maxLength={INPUT_LIMITS.TEAM_NAME}
       />
       <TextInput
         style={[styles.input, { color: colors.text, borderColor: colors.border }]}
@@ -58,6 +59,7 @@ function TeamBlock({
         onChangeText={(v) => onTeam({ coach: v })}
         placeholder="Coach"
         placeholderTextColor="#94a3b8"
+        maxLength={INPUT_LIMITS.TEXT_SHORT}
       />
       <TextInput
         style={[styles.input, { color: colors.text, borderColor: colors.border }]}
@@ -65,6 +67,7 @@ function TeamBlock({
         onChangeText={(v) => onTeam({ capitaine: v })}
         placeholder="Capitaine"
         placeholderTextColor="#94a3b8"
+        maxLength={INPUT_LIMITS.TEXT_SHORT}
       />
       <View style={styles.joueursHeader}>
         <Text style={[styles.subtitle, { color: colors.text }]}>Joueurs</Text>
@@ -84,6 +87,7 @@ function TeamBlock({
             onChangeText={(v) => onJoueur(i, { nom: v })}
             placeholder="Nom"
             placeholderTextColor="#94a3b8"
+            maxLength={INPUT_LIMITS.TEXT_SHORT}
           />
           <TextInput
             style={[styles.joueurInput, { color: colors.text, borderColor: colors.border }]}
@@ -91,6 +95,7 @@ function TeamBlock({
             onChangeText={(v) => onJoueur(i, { prenom: v })}
             placeholder="Prénom"
             placeholderTextColor="#94a3b8"
+            maxLength={INPUT_LIMITS.TEXT_SHORT}
           />
           <TextInput
             style={[styles.joueurInput, { color: colors.text, borderColor: colors.border }]}
@@ -98,6 +103,7 @@ function TeamBlock({
             onChangeText={(v) => onJoueur(i, { numeroLicence: v })}
             placeholder="Licence"
             placeholderTextColor="#94a3b8"
+            maxLength={INPUT_LIMITS.LICENCE}
           />
           <TouchableOpacity onPress={() => onRemove(i)} style={styles.removeBtn}>
             <FontAwesome name="trash-o" size={18} color={colors.tabIconDefault} />

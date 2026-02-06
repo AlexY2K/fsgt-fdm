@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet, useColorScheme } from 'react-native';
 import Colors from '@/constants/Colors';
+import { INPUT_LIMITS } from '@/constants/Validation';
 
 interface Props {
   value: string;
@@ -22,6 +23,7 @@ export function FeuilleSectionReclamations({ value, onChange }: Props) {
         placeholderTextColor="#94a3b8"
         multiline
         numberOfLines={4}
+        maxLength={INPUT_LIMITS.RECLAMATIONS}
       />
     </View>
   );

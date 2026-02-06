@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Colors from '@/constants/Colors';
+import { isValidSignature } from '@/constants/Validation';
 import { SignaturePadModal } from '@/components/feuille/SignaturePadModal';
 import type { Signatures } from '@/types/match';
 
@@ -38,7 +39,7 @@ export function FeuilleSectionSignatures({ signatures, onSignatures, autoArbitra
 
   const signatureItems = keys.map((key) => {
     const value = sigs[key];
-    const hasSignature = !!value && typeof value === 'string' && value.startsWith('data:image');
+    const hasSignature = !!value && isValidSignature(value);
 
     return (
       <View key={key}>
@@ -81,7 +82,9 @@ export function FeuilleSectionSignatures({ signatures, onSignatures, autoArbitra
           title={LABELS[activeModal]}
           initialDataUrl={sigs[activeModal]}
           onSave={(dataUrl) => {
-            onSignatures({ [activeModal]: dataUrl });
+            if (isValidSignature(dataUrl)) {
+              onSignatures({ [activeModal]: dataUrl });
+            }
             setActiveModal(null);
           }}
           onClose={() => setActiveModal(null)}

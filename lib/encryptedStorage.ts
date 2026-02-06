@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import CryptoJS from 'crypto-js';
+import { log } from '@/lib/logger';
 
 const ENCRYPTION_KEY_STORE = 'fsgt_encryption_key';
 
@@ -76,7 +77,7 @@ export const encryptedStorage = {
         const bytes = CryptoJS.AES.decrypt(raw, encryptionKey);
         return bytes.toString(CryptoJS.enc.Utf8);
       } catch (e) {
-        console.error('Failed to decrypt stored data:', e);
+        log.error('Failed to decrypt stored data', e);
         return null;
       }
     }

@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
+import { isValidSignature } from '@/constants/Validation';
 import type { MatchData, Player, SetScore, Signatures } from '@/types/match';
 
 interface MatchState {
@@ -181,9 +182,9 @@ export function MatchProvider({ children }: { children: React.ReactNode }) {
   const setMatchFromData = useCallback((data: MatchData, sheetId?: string | null) => {
     const s = data.signatures;
     const signatures: Signatures = {
-      capitaineA: (s?.capitaineA && typeof s.capitaineA === 'string') ? s.capitaineA : null,
-      capitaineB: (s?.capitaineB && typeof s.capitaineB === 'string') ? s.capitaineB : null,
-      arbitre: (s?.arbitre && typeof s.arbitre === 'string') ? s.arbitre : null,
+      capitaineA: s?.capitaineA && isValidSignature(s.capitaineA) ? s.capitaineA : null,
+      capitaineB: s?.capitaineB && isValidSignature(s.capitaineB) ? s.capitaineB : null,
+      arbitre: s?.arbitre && isValidSignature(s.arbitre) ? s.arbitre : null,
     };
     setMatch({
       info: data.info,
@@ -242,4 +243,22 @@ export function useMatch() {
   const ctx = useContext(MatchContext);
   if (!ctx) throw new Error('useMatch must be used within MatchProvider');
   return ctx;
+}
+
+/** Hook ciblé : infos du match uniquement (Interface Segregation) */
+export function useMatchInfo() {
+  const ctx = useMatch();
+  return {
+    info: ctx.match.info,
+    updateInfo: ctx.updateInfo,
+  };
+}
+
+/** Hook ciblé : scores uniquement (Interface Segregation) */
+export function useMatchScores() {
+  const ctx = useMatch();
+  return {
+    scores: ctx.match.scores,
+    updateScores: ctx.updateScores,
+  };
 }

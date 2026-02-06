@@ -1,8 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { encryptedStorage } from '@/lib/encryptedStorage';
+import { log } from '@/lib/logger';
 import type { MatchSheet, MatchData } from '@/types/match';
 
 const STORAGE_KEY = '@fsgt_match_sheets';
+
+export interface StorageAdapter {
+  getItem: (key: string) => Promise<string | null>;
+  setItem: (key: string, value: string) => Promise<void>;
+  removeItem: (key: string) => Promise<void>;
+}
 
 function migrateSetScore(s: { a?: number | null; b?: number | null } | undefined): { a: number | null; b: number | null } {
   return {
@@ -48,7 +55,7 @@ function migrateMatchData(data: MatchData): MatchData {
   };
 }
 
-export function useMatchSheets() {
+export function useMatchSheets(storage: StorageAdapter = encryptedStorage) {
   const [sheets, setSheets] = useState<MatchSheet[]>([]);
   const [loading, setLoading] = useState(true);
   const sheetsRef = useRef<MatchSheet[]>([]);
@@ -56,13 +63,13 @@ export function useMatchSheets() {
 
   const loadSheets = useCallback(async () => {
     try {
-      const raw = await encryptedStorage.getItem(STORAGE_KEY);
+      const raw = await storage.getItem(STORAGE_KEY);
       let parsed: unknown = [];
       if (raw) {
         try {
           parsed = JSON.parse(raw);
         } catch {
-          console.warn('Corrupted match sheets data, resetting');
+          log.warn('Corrupted match sheets data, resetting');
         }
       }
       const migrated = Array.isArray(parsed)
@@ -70,12 +77,12 @@ export function useMatchSheets() {
         : [];
       setSheets(migrated);
     } catch (e) {
-      console.error('Failed to load match sheets:', e);
+      log.error('Failed to load match sheets', e);
       setSheets([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [storage]);
 
   useEffect(() => {
     loadSheets();
@@ -96,18 +103,18 @@ export function useMatchSheets() {
           };
       const next = existing ? prev.map((s) => (s.id === id ? sheet : s)) : [sheet, ...prev];
       setSheets(next);
-      await encryptedStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      await storage.setItem(STORAGE_KEY, JSON.stringify(next));
       return sheet;
     },
-    []
+    [storage]
   );
 
   const deleteSheet = useCallback(async (id: string) => {
     const prev = sheetsRef.current;
     const next = prev.filter((s) => s.id !== id);
     setSheets(next);
-    await encryptedStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  }, []);
+    await storage.setItem(STORAGE_KEY, JSON.stringify(next));
+  }, [storage]);
 
   const getSheet = useCallback(
     (id: string) => sheets.find((s) => s.id === id) ?? null,
