@@ -1,0 +1,7 @@
+export const VOLLEY_RULES = {
+  POINTS_TO_WIN_SET: 25,
+  POINTS_TO_WIN_TIEBREAK: 15,
+  MIN_POINT_GAP: 2,
+  MAX_SETS: 5,
+  SETS_TO_WIN_MATCH: 3,
+} as const;
