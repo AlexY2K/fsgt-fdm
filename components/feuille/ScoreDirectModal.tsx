@@ -21,13 +21,13 @@ interface Props {
 
 const TINT = '#1a5f7a';
 
-const SUPPORTED_ORIENTATIONS = [
+const SUPPORTED_ORIENTATIONS: Array<'portrait' | 'portrait-upside-down' | 'landscape' | 'landscape-left' | 'landscape-right'> = [
   'portrait',
   'portrait-upside-down',
   'landscape',
   'landscape-left',
   'landscape-right',
-] as const;
+];
 
 export function ScoreDirectModal({ visible, onClose }: Props) {
   const insets = useSafeAreaInsets();

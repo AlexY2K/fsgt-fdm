@@ -15,13 +15,13 @@ import {
 } from '@/constants/Championnats';
 import Colors from '@/constants/Colors';
 
-const SUPPORTED_ORIENTATIONS = [
+const SUPPORTED_ORIENTATIONS: Array<'portrait' | 'portrait-upside-down' | 'landscape' | 'landscape-left' | 'landscape-right'> = [
   'portrait',
   'portrait-upside-down',
   'landscape',
   'landscape-left',
   'landscape-right',
-] as const;
+];
 
 const SECTIONS = [
   { title: 'Volley 4x4 mixte', data: CHAMPIONNATS_4X4_MIXTE },

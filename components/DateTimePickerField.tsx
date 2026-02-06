@@ -12,13 +12,13 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Colors from '@/constants/Colors';
 
-const SUPPORTED_ORIENTATIONS = [
+const SUPPORTED_ORIENTATIONS: Array<'portrait' | 'portrait-upside-down' | 'landscape' | 'landscape-left' | 'landscape-right'> = [
   'portrait',
   'portrait-upside-down',
   'landscape',
   'landscape-left',
   'landscape-right',
-] as const;
+];
 
 interface Props {
   value: string;

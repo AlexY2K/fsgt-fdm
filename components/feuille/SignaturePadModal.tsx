@@ -28,7 +28,7 @@ export function SignaturePadModal({
 }: Props) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const ref = useRef<SignatureCanvas>(null);
+  const ref = useRef<React.ComponentRef<typeof SignatureCanvas> | null>(null);
 
   const handleOK = (signature: string) => {
     onSave(signature);
