@@ -55,7 +55,3 @@ Puis scanner le QR code avec Expo Go (Android) ou l’appareil photo (iOS).
 - **TypeScript**
 - **react-native-signature-canvas**
 - **expo-secure-store**
-
-## Licence
-
-Projet FSGT.
